@@ -35,7 +35,7 @@ function getTime() {
 
 // Gets the first message
 function firstBotMessage() {
-    let firstMessage = "How's it going?"
+    let firstMessage = "Hello!"
     document.getElementById("botStarterMessage").innerHTML = '<p class="botText"><span>' + firstMessage + '</span></p>';
 
     let time = getTime();
@@ -47,9 +47,9 @@ function firstBotMessage() {
 firstBotMessage();
 
 // Retrieves the response
-function getHardResponse(userText) {
-    let botResponse = getBotResponse(userText);
-    let botHtml = '<p class="botText"><span>' + botResponse + '</span></p>';
+async function getHardResponse(userText) {
+    let botResponse = await getBotResponse(userText);
+    let botHtml = '<p class="botText"><span>' + botResponse['answer'] + '</span></p>';
     $("#chatbox").append(botHtml);
 
     document.getElementById("chat-bar-bottom").scrollIntoView(true);
@@ -70,8 +70,25 @@ function getResponse() {
     document.getElementById("chat-bar-bottom").scrollIntoView(true);
 
     setTimeout(() => {
-        getHardResponse(userText);
-    }, 1000)
+        var data = {
+            prompt: userText
+        };
+        $.ajax({
+            url: "https://totonou-qa-by-yuta-gateway-57yiso8q.an.gateway.dev/",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            type: 'POST',
+            data: JSON.stringify(data),
+            dataType: 'json',
+            success: function(res) {
+                let botHtml = '<p class="botText"><span>' + res['answer'] + '</span></p>';
+                $("#chatbox").append(botHtml);
+                document.getElementById("chat-bar-bottom").scrollIntoView(true);
+                console.log(res['answer']);
+            }
+        });
+    }, 100)
 
 }
 

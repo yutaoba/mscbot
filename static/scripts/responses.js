@@ -1,4 +1,4 @@
-function getBotResponse(input) {
+async function getBotResponse(input) {
     //rock paper scissors
     if (input == "rock") {
         return "paper";
@@ -6,14 +6,27 @@ function getBotResponse(input) {
         return "scissors";
     } else if (input == "scissors") {
         return "rock";
-    }
-
-    // Simple responses
-    if (input == "hello") {
-        return "Hello there!";
-    } else if (input == "goodbye") {
-        return "Talk to you later!";
     } else {
-        return "Try asking something else!";
+        let result;
+        var data = {
+            prompt: input
+        };
+        try {
+            result = $.ajax({
+                url: "https://totonou-qa-by-yuta-gateway-57yiso8q.an.gateway.dev/",
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                type: 'POST',
+                data: JSON.stringify(data),
+                dataType: 'json',
+                success: function(res) {
+                    console.log(res['answer']);
+                }
+            });
+            return result;
+        } catch (error) {
+            console.error(error);
+        }
     }
 }
