@@ -141,6 +141,11 @@
     animation: floatup .5s forwards
 }
 
+.botText span span {
+    display: inline;
+    animation: blink 1.5s linear infinite;
+}
+
 @keyframes floatup {
     from {
         transform: translateY(14px);
@@ -168,5 +173,14 @@
         border: 0px;
         border-top: 3px solid white;
         border-radius: 0px;
+    }
+}
+
+@keyframes blink {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0;
     }
 }
