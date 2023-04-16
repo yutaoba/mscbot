@@ -1,7 +1,37 @@
 // Collapsible
 var coll = document.getElementsByClassName("collapsible");
 
+var i = 0;
+
 let isWaiting = false;
+
+let loadingHTML = `<svg version="1.1" id="L4" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+viewBox="0 45 60 10" enable-background="new 0 0 0 0" xml:space="preserve">
+<circle fill="080808" stroke="none" cx="6" cy="50" r="6">
+  <animate
+    attributeName="opacity"
+    dur="1s"
+    values="0;1;0"
+    repeatCount="indefinite"
+    begin="0.1"/>    
+</circle>
+<circle fill="080808" stroke="none" cx="26" cy="50" r="6">
+  <animate
+    attributeName="opacity"
+    dur="1s"
+    values="0;1;0"
+    repeatCount="indefinite" 
+    begin="0.2"/>       
+</circle>
+<circle fill="080808" stroke="none" cx="46" cy="50" r="6">
+  <animate
+    attributeName="opacity"
+    dur="1s"
+    values="0;1;0"
+    repeatCount="indefinite" 
+    begin="0.3"/>     
+</circle>
+</svg>`;
 
 for (let i = 0; i < coll.length; i++) {
     coll[i].addEventListener("click", function () {
@@ -59,6 +89,7 @@ async function getHardResponse(userText) {
 
 //Gets the text text from the input box and processes it
 function getResponse() {
+    
     isWaiting = true;
 
     let userText = $("#textInput").val();
@@ -73,40 +104,54 @@ function getResponse() {
     $("#chatbox").append(userHtml);
     document.getElementById("chat-bar-bottom").scrollIntoView(true);
 
+    i++;
+
     setTimeout(() => {
         var data = {
             prompt: userText
         };
 
         var botPromise = $.ajax({
-            url: "https://totonou-project-chatbot-gateway-407tq1ig.an.gateway.dev/",
+            // url: "https://totonou-project-chatbot-gateway-407tq1ig.an.gateway.dev/",
+            // url: "https://totonou-project-chatbot.an.r.appspot.com/",
+            url: "https://totonou-sitegpt-3qznvkpr5a-an.a.run.app",
+            // url: "http://127.0.0.1:8080/",
             headers: {
                 'Content-Type': 'application/json',
             },
             type: 'POST',
             data: JSON.stringify(data),
-            dataType: 'json',
+            // dataType: 'json',
+            xhrFields: {
+                // Getting on progress streaming response
+                onprogress: function(e)
+                {
+                    var response = e.currentTarget.response;
+                    document.getElementById('answerTextSpan' + String(i)).textContent = response;
+                    document.getElementById("chat-bar-bottom").scrollIntoView(true);
+                }
+            }
         });
-        
-        let botHtml = '<p id="loadingText" class="botText"><span><span>ChatGPTが回答を作成中です...</span></span></p>';
-        $("#chatbox").append(botHtml);
+
+        // Show loader until getting an initial streaming response.
+        let emptyHtml = '<p id="answerText' + String(i) + '" class="botText"><span id="answerTextSpan' + String(i) + '">' + loadingHTML + '</span></p>';
+        $("#chatbox").append(emptyHtml);
         document.getElementById("chat-bar-bottom").scrollIntoView(true);
 
         botPromise.then(function(res, textStatus, jqXHR) {
-            $("#loadingText").remove();
-            let botHtml = '<p class="botText"><span>' + res['answer'] + '</span></p>';
-            $("#chatbox").append(botHtml);
-            document.getElementById("chat-bar-bottom").scrollIntoView(true);
-            console.log(res['answer']);
             isWaiting = false;
         }, function(jqXHR, textStatus, errorThrown) {
-            $("#loadingText").remove();
             console.log('Failed.');
+            console.log(jqXHR);
+            console.log(textStatus);
+            console.log(errorThrown);
+            $("#answerText" + String(i)).remove();
             let botHtml = '<p class="botText"><span>申し訳ございません。サーバーが混み合っているため、時間をおいて再度お問い合わせください。</span></p>';
             $("#chatbox").append(botHtml);
             document.getElementById("chat-bar-bottom").scrollIntoView(true);
             isWaiting = false;
         });
+
     }, 1000);
 }
 

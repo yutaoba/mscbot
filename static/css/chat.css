@@ -144,7 +144,7 @@
 
 .botText span span {
     display: inline;
-    animation: blink 1.5s linear infinite;
+    /* animation: blink 1.5s linear infinite; */
 }
 
 @keyframes floatup {
@@ -177,11 +177,20 @@
     }
 }
 
-@keyframes blink {
+/* @keyframes blink {
     0%, 100% {
         opacity: 1;
     }
     50% {
         opacity: 0;
     }
-}
+} */
+
+@import url(https://fonts.googleapis.com/css?family=Comfortaa:400,700,300);
+
+svg{
+    width: 40px;
+    height: 40px;
+    margin-left: 5px;
+    display: inline;
+  }
